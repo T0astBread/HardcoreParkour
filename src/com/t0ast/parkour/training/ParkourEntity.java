@@ -5,6 +5,8 @@
  */
 package com.t0ast.parkour.training;
 
+import com.badlogic.gdx.math.Vector2;
+import com.t0ast.evolution.entities.Entity;
 import com.t0ast.evolution.entities.instructional.InstructionalEntity;
 
 /**
@@ -13,10 +15,30 @@ import com.t0ast.evolution.entities.instructional.InstructionalEntity;
  */
 public class ParkourEntity extends InstructionalEntity
 {
+    private Vector2 position, direction;
 
     public ParkourEntity()
     {
         super(100);
+        this.position = new Vector2(0, 0);
+        this.direction = new Vector2(1, 1);
     }
-    
+
+    public Vector2 getPosition()
+    {
+        return position;
+    }
+
+    public Vector2 getDirection()
+    {
+        return direction;
+    }
+
+    @Override
+    public Entity duplicate()
+    {
+        ParkourEntity entity = new ParkourEntity();
+        entity.getInstructions().addAll(this.getInstructions());
+        return entity;
+    }
 }

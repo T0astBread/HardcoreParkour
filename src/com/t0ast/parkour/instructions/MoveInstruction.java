@@ -15,6 +15,6 @@ public class MoveInstruction extends IntInstruction
 {
     public MoveInstruction()
     {
-        super(600, "MOVE");
+        super(100, "MOVE");
     }
 }
