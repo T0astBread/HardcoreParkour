@@ -5,7 +5,7 @@
  */
 package com.t0ast.parkour;
 
-import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Rectangle;
 import com.t0ast.evolution.EvolvingPool;
 import com.t0ast.parkour.training.ParkourEnvironment;
 import com.t0ast.evolution.entities.instructional.InstructionGenerator;
@@ -54,22 +54,12 @@ public class EvolutionApplication
 
     private ParkourEnvironment getTrainingEnv()
     {
-        Polygon obst = new Polygon();
-        obst.setPosition(100, 50);
-        obst.setOrigin(100, 50);
-        obst.setVertices(new float[]
-        {
-            0, 0,
-            0, 45,
-            150, 20,
-            120, 0
-        });
-        return new ParkourEnvironment(300, 100, obst);
+        return new ParkourEnvironment(300, 100, new Rectangle(100, 30, 100, 50), new Rectangle(260, 10, 20, 75), new Rectangle(10, 0, 10, 90));
     }
 
     public void doGenerations(int generations)
     {
-        for(int i = 0; i < generations; i++)
+        for(int i = 0; i < generations && !Thread.interrupted(); i++)
         {
             this.pool.nextGen();
         }

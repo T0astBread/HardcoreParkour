@@ -13,10 +13,8 @@ import com.t0ast.evolution.entities.instructional.instructions.IntInstruction;
  */
 public class TurnInstruction extends IntInstruction
 {
-
     public TurnInstruction()
     {
-        super(360, "TURN");
+        super(360, "TURN"); //Change back to reasonable value!!
     }
-    
 }

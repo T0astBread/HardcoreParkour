@@ -5,6 +5,7 @@
  */
 package com.t0ast.parkour.visualization;
 
+import com.sun.javafx.util.Utils;
 import com.t0ast.parkour.EvolutionApplication;
 
 /**
@@ -13,7 +14,9 @@ import com.t0ast.parkour.EvolutionApplication;
  */
 public class MainFrame extends javax.swing.JFrame
 {
+
     private EvolutionApplication evo;
+    private Thread evolutionThread;
 
     /**
      * Creates new form MainFrame
@@ -39,8 +42,17 @@ public class MainFrame extends javax.swing.JFrame
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         visualizationPanel1 = new com.t0ast.parkour.visualization.VisualizationPanel();
+        sldSpeed = new javax.swing.JSlider();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addMouseWheelListener(new java.awt.event.MouseWheelListener()
+        {
+            public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt)
+            {
+                formMouseWheelMoved(evt);
+            }
+        });
         addWindowListener(new java.awt.event.WindowAdapter()
         {
             public void windowOpened(java.awt.event.WindowEvent evt)
@@ -62,7 +74,7 @@ public class MainFrame extends javax.swing.JFrame
 
         sldZoom.setMaximum(2000);
         sldZoom.setMinimum(100);
-        sldZoom.setValue(200);
+        sldZoom.setValue(350);
         sldZoom.addChangeListener(new javax.swing.event.ChangeListener()
         {
             public void stateChanged(javax.swing.event.ChangeEvent evt)
@@ -80,6 +92,8 @@ public class MainFrame extends javax.swing.JFrame
 
         jLabel2.setText("Zoom");
 
+        jScrollPane1.setWheelScrollingEnabled(false);
+
         javax.swing.GroupLayout visualizationPanel1Layout = new javax.swing.GroupLayout(visualizationPanel1);
         visualizationPanel1.setLayout(visualizationPanel1Layout);
         visualizationPanel1Layout.setHorizontalGroup(
@@ -88,10 +102,23 @@ public class MainFrame extends javax.swing.JFrame
         );
         visualizationPanel1Layout.setVerticalGroup(
             visualizationPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 395, Short.MAX_VALUE)
+            .addGap(0, 580, Short.MAX_VALUE)
         );
 
         jScrollPane1.setViewportView(visualizationPanel1);
+
+        sldSpeed.setMaximum(200);
+        sldSpeed.setMinimum(2);
+        sldSpeed.setValue(10);
+        sldSpeed.addChangeListener(new javax.swing.event.ChangeListener()
+        {
+            public void stateChanged(javax.swing.event.ChangeEvent evt)
+            {
+                sldSpeedStateChanged(evt);
+            }
+        });
+
+        jLabel1.setText("Speed");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -104,7 +131,11 @@ public class MainFrame extends javax.swing.JFrame
                         .addComponent(btnDoGenerations)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(spnGenerations, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 198, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 390, Short.MAX_VALUE)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(sldSpeed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(sldZoom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -115,14 +146,16 @@ public class MainFrame extends javax.swing.JFrame
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE)
+                .addComponent(jScrollPane1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btnDoGenerations)
-                        .addComponent(spnGenerations, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(spnGenerations, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel1))
                     .addComponent(sldZoom, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(sldSpeed, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -132,27 +165,48 @@ public class MainFrame extends javax.swing.JFrame
     private void formWindowOpened(java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowOpened
     {//GEN-HEADEREND:event_formWindowOpened
         this.evo = new EvolutionApplication(this.visualizationPanel1);
+        sldZoomStateChanged(null);
     }//GEN-LAST:event_formWindowOpened
 
     private void btnDoGenerationsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnDoGenerationsActionPerformed
     {//GEN-HEADEREND:event_btnDoGenerationsActionPerformed
-        this.btnDoGenerations.setEnabled(false);
-        new Thread(() ->
+        if(this.evolutionThread != null)
+        {
+            this.evolutionThread.interrupt();
+            this.btnDoGenerations.setEnabled(false);
+            return;
+        }
+        this.btnDoGenerations.setText("Finish Generation and Stop");
+        this.evolutionThread = new Thread(() ->
         {
             this.evo.doGenerations((int) this.spnGenerations.getValue());
+            this.evolutionThread = null;
+            this.btnDoGenerations.setText("Do Generations");
             this.btnDoGenerations.setEnabled(true);
-        }).start();
+        }, "EvolutionThread");
+        this.evolutionThread.start();
     }//GEN-LAST:event_btnDoGenerationsActionPerformed
 
     private void sldZoomStateChanged(javax.swing.event.ChangeEvent evt)//GEN-FIRST:event_sldZoomStateChanged
     {//GEN-HEADEREND:event_sldZoomStateChanged
-        this.visualizationPanel1.setZoom(this.sldZoom.getValue()/100f);
+        this.visualizationPanel1.setZoom(this.sldZoom.getValue() / 100f);
     }//GEN-LAST:event_sldZoomStateChanged
 
     private void sldZoomMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_sldZoomMouseReleased
     {//GEN-HEADEREND:event_sldZoomMouseReleased
         this.jScrollPane1.revalidate();
     }//GEN-LAST:event_sldZoomMouseReleased
+
+    private void sldSpeedStateChanged(javax.swing.event.ChangeEvent evt)//GEN-FIRST:event_sldSpeedStateChanged
+    {//GEN-HEADEREND:event_sldSpeedStateChanged
+        this.visualizationPanel1.setSleepTime(Utils.clamp(1, this.sldSpeed.getMaximum(), this.sldSpeed.getMaximum() - this.sldSpeed.getValue()));
+    }//GEN-LAST:event_sldSpeedStateChanged
+
+    private void formMouseWheelMoved(java.awt.event.MouseWheelEvent evt)//GEN-FIRST:event_formMouseWheelMoved
+    {//GEN-HEADEREND:event_formMouseWheelMoved
+        this.sldZoom.setValue(this.sldZoom.getValue() + (this.sldZoom.getMaximum() + this.sldZoom.getMinimum())/-15 * evt.getWheelRotation());
+        sldZoomMouseReleased(null);
+    }//GEN-LAST:event_formMouseWheelMoved
 
     /**
      * @param args the command line arguments
@@ -205,8 +259,10 @@ public class MainFrame extends javax.swing.JFrame
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDoGenerations;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JSlider sldSpeed;
     private javax.swing.JSlider sldZoom;
     private javax.swing.JSpinner spnGenerations;
     private com.t0ast.parkour.visualization.VisualizationPanel visualizationPanel1;

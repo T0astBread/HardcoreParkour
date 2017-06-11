@@ -15,6 +15,6 @@ public class MoveInstruction extends IntInstruction
 {
     public MoveInstruction()
     {
-        super(100, "MOVE");
+        super(100, "MOVE"); //Change back to reasonable value!!
     }
 }

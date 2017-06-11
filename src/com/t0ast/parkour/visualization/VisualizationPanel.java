@@ -5,6 +5,7 @@
  */
 package com.t0ast.parkour.visualization;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.t0ast.parkour.training.ParkourEntity;
 import com.t0ast.parkour.training.ParkourEnvironment;
@@ -13,7 +14,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -28,7 +28,7 @@ public class VisualizationPanel extends javax.swing.JPanel
     private ParkourEnvironment environment;
     private List<ParkourEntity> entities;
     private float zoom = 2f;
-    private int width, height;
+    private int sleepTime = 2;
 
     /**
      * Creates new form VisualizationPanel
@@ -50,11 +50,11 @@ public class VisualizationPanel extends javax.swing.JPanel
         drawEnvironment(environment, entities);
         try
         {
-            Thread.sleep(200);
+            Thread.sleep(this.sleepTime);
         }
         catch(InterruptedException iex)
         {
-            return;
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -74,22 +74,26 @@ public class VisualizationPanel extends javax.swing.JPanel
         g.fillRect(MARGIN, MARGIN, zoom(this.environment.getWidth()), zoom(this.environment.getHeight()));
 
         g.setColor(Color.BLACK); //Draw obstacles
-        //Convert LibGDX polygons to Java Swing polygons
-        Arrays.stream(this.environment.getObstacles()).forEach(o ->
+//        //Convert LibGDX polygons to Java Swing polygons
+//        Arrays.stream(this.environment.getObstacles()).forEach(o ->
+//        {
+//            float[] verts = o.getTransformedVertices();
+//            int[] xPoints = new int[verts.length / 2], yPoints = new int[verts.length / 2];
+//            for(int i = 0; i < verts.length; i++)
+//            {
+//                int[] toPutIn = yPoints;
+//                if(i % 2 == 0)
+//                {
+//                    toPutIn = xPoints;
+//                }
+//                toPutIn[i / 2] = project(verts[i]);
+//            }
+//            g.fillPolygon(xPoints, yPoints, xPoints.length);
+//        });
+        for(Rectangle obstacles : this.environment.getObstacles())
         {
-            float[] verts = o.getTransformedVertices();
-            int[] xPoints = new int[verts.length / 2], yPoints = new int[verts.length / 2];
-            for(int i = 0; i < verts.length; i++)
-            {
-                int[] toPutIn = yPoints;
-                if(i % 2 == 0)
-                {
-                    toPutIn = xPoints;
-                }
-                toPutIn[i / 2] = project(verts[i]);
-            }
-            g.fillPolygon(xPoints, yPoints, xPoints.length);
-        });
+            g.fillRect(project(obstacles.x), project(obstacles.y), project(obstacles.width), project(obstacles.height));
+        }
 
         if(this.entities == null)
         {
@@ -147,6 +151,12 @@ public class VisualizationPanel extends javax.swing.JPanel
         }
         repaint();
     }
+
+    public void setSleepTime(int sleepTime)
+    {
+        this.sleepTime = sleepTime;
+    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.

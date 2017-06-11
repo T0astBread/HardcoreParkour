@@ -38,6 +38,8 @@ public class ParkourEntity extends InstructionalEntity
     public Entity duplicate()
     {
         ParkourEntity entity = new ParkourEntity();
+        entity.position = this.position.cpy();
+        entity.direction = this.direction.cpy();
         entity.getInstructions().addAll(this.getInstructions());
         return entity;
     }
