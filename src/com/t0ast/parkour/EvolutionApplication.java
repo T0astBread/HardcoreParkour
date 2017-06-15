@@ -11,8 +11,8 @@ import com.t0ast.parkour.training.ParkourEnvironment;
 import com.t0ast.evolution.entities.instructional.InstructionGenerator;
 import com.t0ast.evolution.entities.instructional.InstructionalEntityGenerator;
 import com.t0ast.evolution.entities.instructional.InstructionalMutator;
+import com.t0ast.evolution.misc.selectors.IterativeExponentialListElementSelector;
 import com.t0ast.evolution.misc.selectors.EqualRandomListElementSelector;
-import com.t0ast.evolution.misc.selectors.FirstListElementSelector;
 import com.t0ast.evolution.training.trainers.CumulativeTrainer;
 import com.t0ast.parkour.instructions.MoveInstruction;
 import com.t0ast.parkour.instructions.TurnInstruction;
@@ -42,7 +42,7 @@ public class EvolutionApplication
         ig.registerInstruction(MoveInstruction.class);
         ig.registerInstruction(TurnInstruction.class);
         this.pool = new EvolvingPool<>(new CumulativeTrainer<>(this.environment, rater),
-        100, 50, new FirstListElementSelector(), new EqualRandomListElementSelector(),
+        100, 50, new IterativeExponentialListElementSelector(.9, .02), new IterativeExponentialListElementSelector(.9, .2),
         new InstructionalMutator<>(ig, new EqualRandomListElementSelector()), EvolvingPool.MutationType.SINGLE_PARENT,
         new InstructionalEntityGenerator<>(new ParkourEntity(), ig));
         this.pool.initialize();
