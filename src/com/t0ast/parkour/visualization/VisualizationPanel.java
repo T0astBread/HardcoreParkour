@@ -7,13 +7,17 @@ package com.t0ast.parkour.visualization;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.t0ast.evolution.EvolvingPool;
 import com.t0ast.parkour.training.ParkourEntity;
 import com.t0ast.parkour.training.ParkourEnvironment;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -22,13 +26,16 @@ import java.util.List;
  */
 public class VisualizationPanel extends javax.swing.JPanel
 {
-
     private static final int MARGIN = 10;
     private static final BasicStroke ENTITY_BODY = new BasicStroke(5, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND), ENTITY_BG = new BasicStroke(7, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-    private ParkourEnvironment environment;
-    private List<ParkourEntity> entities;
+    private static final Font GENERATION_LABEL_FONT = new Font("Arial", Font.BOLD, 64), GENERATION_LABEL_FONT_SMALL = GENERATION_LABEL_FONT.deriveFont(48f);
+    private ColorConfiguration colors;
     private float zoom = 2f;
     private int sleepTime = 2;
+    
+    private EvolvingPool pool;
+    private ParkourEnvironment environment;
+    private List<ParkourEntity> entities;
 
     /**
      * Creates new form VisualizationPanel
@@ -36,6 +43,27 @@ public class VisualizationPanel extends javax.swing.JPanel
     public VisualizationPanel()
     {
         initComponents();
+        this.colors = new ColorConfiguration(this::repaint);
+    }
+
+    public EvolvingPool getPool()
+    {
+        return pool;
+    }
+
+    public void setPool(EvolvingPool pool)
+    {
+        this.pool = pool;
+    }
+
+    public ColorConfiguration getColors()
+    {
+        return colors;
+    }
+
+    public void setColors(ColorConfiguration colors)
+    {
+        this.colors = colors;
     }
 
     public void drawEnvironment(ParkourEnvironment environment, List<ParkourEntity> entities)
@@ -47,6 +75,7 @@ public class VisualizationPanel extends javax.swing.JPanel
     
     public void drawEnvironmentUpdateStep(ParkourEnvironment environment, List<ParkourEntity> entities)
     {
+        if(this.sleepTime <= 2) return;
         drawEnvironment(environment, entities);
         try
         {
@@ -63,17 +92,17 @@ public class VisualizationPanel extends javax.swing.JPanel
     {
         Graphics2D g2d = (Graphics2D) g;
 
-        g.setColor(Color.BLACK);
+        g.setColor(this.colors.getBackground());
         g.fillRect(0, 0, getWidth(), getHeight());
 
         if(this.environment == null)
         {
             return;
         }
-        g.setColor(Color.LIGHT_GRAY); //Draw environment
+        g.setColor(this.colors.getFloor()); //Draw environment
         g.fillRect(MARGIN, MARGIN, zoom(this.environment.getWidth()), zoom(this.environment.getHeight()));
 
-        g.setColor(Color.BLACK); //Draw obstacles
+        g.setColor(this.colors.getBackground()); //Draw obstacles
 //        //Convert LibGDX polygons to Java Swing polygons
 //        Arrays.stream(this.environment.getObstacles()).forEach(o ->
 //        {
@@ -92,8 +121,23 @@ public class VisualizationPanel extends javax.swing.JPanel
 //        });
         for(Rectangle obstacles : this.environment.getObstacles())
         {
-            g.fillRect(project(obstacles.x), project(obstacles.y), project(obstacles.width), project(obstacles.height));
+            g.fillRect(project(obstacles.x), project(obstacles.y), zoom(obstacles.width), zoom(obstacles.height));
         }
+        
+        //Draw checkpoints
+        Arrays.stream(this.environment.getCheckpoints()).forEach(c ->
+        {
+            g.setColor(this.colors.getEntityBorders());
+            g.fillOval(project(c.x) - 3, project(c.y) - 3, 6, 6);
+            g.setColor(Color.BLUE);
+            g.fillOval(project(c.x) - 2, project(c.y) - 2, 4, 4);
+        });
+        
+        //Draw goal
+        g.setColor(this.colors.getEntityBorders());
+        g.fillOval(project(this.environment.getGoal().x) - 4, project(this.environment.getGoal().y) - 4, 8, 8);
+        g.setColor(Color.red);
+        g.fillOval(project(this.environment.getGoal().x) - 3, project(this.environment.getGoal().y) - 3, 6, 6);
 
         if(this.entities == null)
         {
@@ -107,20 +151,29 @@ public class VisualizationPanel extends javax.swing.JPanel
             int endX = project(endPoint.x), endY = project(endPoint.y);
 
             g2d.setStroke(ENTITY_BG);
-            g.setColor(Color.BLACK);
+            g.setColor(this.colors.getEntityBorders());
             drawEntityLine(g, e, endX, endY);
             g2d.setStroke(ENTITY_BODY);
-            g.setColor(Color.YELLOW);
+            g.setColor(this.colors.getEntityBody());
             drawEntityLine(g, e, endX, endY);
             g2d.setStroke(ENTITY_BODY);
 
             endX -= 2;
             endY -= 2;
-            g.setColor(Color.BLACK);
+            g.setColor(this.colors.getEntityBorders());
             g.drawOval(endX - 1, endY - 1, 7, 7);
-            g.setColor(Color.RED);
+            g.setColor(this.colors.getEntityHead());
             g.drawOval(endX, endY, 5, 5);
         });
+        
+        //Draw generation count
+        g.setColor(Color.WHITE);
+        g.setFont(GENERATION_LABEL_FONT_SMALL);
+        g.setFont(GENERATION_LABEL_FONT);
+        FontMetrics fm = g.getFontMetrics(GENERATION_LABEL_FONT);
+        String genLabelText = Integer.toString(this.pool.getGenerationIndex());
+        int strWidth = fm.charsWidth(genLabelText.toCharArray(), 0, genLabelText.length());
+        g.drawString(genLabelText, getParent().getWidth() - 10 - strWidth, getParent().getHeight() - 10);
     }
 
     private void drawEntityLine(Graphics g, ParkourEntity e, int endX, int endY)

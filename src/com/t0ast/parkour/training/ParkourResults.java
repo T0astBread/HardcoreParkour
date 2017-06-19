@@ -5,24 +5,33 @@
  */
 package com.t0ast.parkour.training;
 
+import com.badlogic.gdx.math.Vector2;
 import com.t0ast.evolution.entities.Entity;
+import com.t0ast.evolution.training.TrainingResults;
 
 /**
  *
  * @author T0astBread
  */
-public class ParkourResults extends com.t0ast.evolution.training.TrainingResults
+public class ParkourResults extends TrainingResults<ParkourEntity>
 {
-    private final float distance;
+    private final Vector2[] checkPoints;
+    private final Vector2 goal;
 
-    public ParkourResults(float distance, Entity entity)
+    public ParkourResults(Vector2[] checkPoints, Vector2 goal, ParkourEntity entity)
     {
         super(entity);
-        this.distance = distance;
+        this.checkPoints = checkPoints;
+        this.goal = goal;
     }
 
-    public float getDistance()
+    public Vector2[] getCheckPoints()
     {
-        return distance;
+        return checkPoints;
+    }
+
+    public Vector2 getGoal()
+    {
+        return goal;
     }
 }

@@ -21,19 +21,28 @@ import java.util.List;
  */
 public class ParkourEnvironment implements CumulativeTrainingEnvironment<ParkourEntity, ParkourResults>
 {
-
     public static final int MAX_CYCLES_PER_TRAINING = 100, MOVEMENT_STEPS = 100;
     public static final float MOVEMENT_STEP_SIZE = 1f/MOVEMENT_STEPS;
 
     private int width, height;
     private Rectangle[] obstacles;
+    private Vector2[] checkpoints;
+    private Vector2 goal;
     private VisualizationPanel visualization;
 
-    public ParkourEnvironment(int width, int height, Rectangle... obstacles)
+    public ParkourEnvironment(int width, int height, Vector2 goal, Rectangle... obstacles)
     {
         this.width = width;
         this.height = height;
+        this.goal = goal;
         this.obstacles = obstacles;
+        this.checkpoints = new Vector2[0];
+    }
+    
+    public ParkourEnvironment addCheckpoints(Vector2... checkpoints)
+    {
+        this.checkpoints = checkpoints;
+        return this;
     }
 
     @Override
@@ -81,7 +90,8 @@ public class ParkourEnvironment implements CumulativeTrainingEnvironment<Parkour
 
     private ParkourResults createResults(ParkourEntity entity)
     {
-        return new ParkourResults((Math.round(entity.getPosition().x) * 1f) / this.width, entity);
+//        return new ParkourResults((Math.round(entity.getPosition().x) * 1f) / this.width, entity);
+        return new ParkourResults(this.checkpoints, this.goal, entity);
     }
 
     private boolean updateCycle(ParkourEntity entity, final int cycle)
@@ -167,8 +177,8 @@ public class ParkourEnvironment implements CumulativeTrainingEnvironment<Parkour
     private boolean intersectPointRectangle(Vector2 point, Rectangle rect)
     {
         float px = point.x, py = point.y,
-        x0 = rect.x, x1 = x0 + rect.width,
-        y0 = rect.y, y1 = y0 + rect.height;
+        x0 = rect.x, x1 = x0 + rect.width * 1.05f,  //<- Dirty workaround to avoid the entities slightly glitching into the obstacles; TODO: CHANGE!!
+        y0 = rect.y, y1 = y0 + rect.height * 1.05f; //<-
         return  px >= x0 && px <= x1
         && py >= y0 && py <= y1;
     }
@@ -191,6 +201,16 @@ public class ParkourEnvironment implements CumulativeTrainingEnvironment<Parkour
     public Rectangle[] getObstacles()
     {
         return obstacles;
+    }
+
+    public Vector2[] getCheckpoints()
+    {
+        return checkpoints;
+    }
+
+    public Vector2 getGoal()
+    {
+        return goal;
     }
 
     public void setVisualization(VisualizationPanel visualization)

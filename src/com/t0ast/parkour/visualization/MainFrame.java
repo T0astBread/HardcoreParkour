@@ -7,6 +7,8 @@ package com.t0ast.parkour.visualization;
 
 import com.sun.javafx.util.Utils;
 import com.t0ast.parkour.EvolutionApplication;
+import java.awt.Font;
+import javax.swing.JDialog;
 
 /**
  *
@@ -14,7 +16,8 @@ import com.t0ast.parkour.EvolutionApplication;
  */
 public class MainFrame extends javax.swing.JFrame
 {
-
+    private static final Font FONT_AWSOME = loadIconFont();
+    
     private EvolutionApplication evo;
     private Thread evolutionThread;
 
@@ -24,6 +27,18 @@ public class MainFrame extends javax.swing.JFrame
     public MainFrame()
     {
         initComponents();
+    }
+    
+    private static Font loadIconFont()
+    {
+        try
+        {
+            return Font.createFont(Font.TRUETYPE_FONT, MainFrame.class.getResourceAsStream("../fontawesome-webfont.ttf")).deriveFont(48f);
+        }
+        catch(Exception ex)
+        {
+            return new Font("Calibri", Font.PLAIN, 0);
+        }
     }
 
     /**
@@ -40,12 +55,16 @@ public class MainFrame extends javax.swing.JFrame
         spnGenerations = new javax.swing.JSpinner();
         sldZoom = new javax.swing.JSlider();
         jLabel2 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        visualizationPanel1 = new com.t0ast.parkour.visualization.VisualizationPanel();
         sldSpeed = new javax.swing.JSlider();
         jLabel1 = new javax.swing.JLabel();
+        jLayeredPane1 = new javax.swing.JLayeredPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        visualizationPanel1 = new com.t0ast.parkour.visualization.VisualizationPanel();
+        pnlOverlay = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("HARDCORE PARKOUR");
         addMouseWheelListener(new java.awt.event.MouseWheelListener()
         {
             public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt)
@@ -92,21 +111,6 @@ public class MainFrame extends javax.swing.JFrame
 
         jLabel2.setText("Zoom");
 
-        jScrollPane1.setWheelScrollingEnabled(false);
-
-        javax.swing.GroupLayout visualizationPanel1Layout = new javax.swing.GroupLayout(visualizationPanel1);
-        visualizationPanel1.setLayout(visualizationPanel1Layout);
-        visualizationPanel1Layout.setHorizontalGroup(
-            visualizationPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        visualizationPanel1Layout.setVerticalGroup(
-            visualizationPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 580, Short.MAX_VALUE)
-        );
-
-        jScrollPane1.setViewportView(visualizationPanel1);
-
         sldSpeed.setMaximum(200);
         sldSpeed.setMinimum(2);
         sldSpeed.setValue(10);
@@ -119,6 +123,74 @@ public class MainFrame extends javax.swing.JFrame
         });
 
         jLabel1.setText("Speed");
+
+        jLayeredPane1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+
+        jScrollPane1.setBorder(null);
+        jScrollPane1.setWheelScrollingEnabled(false);
+
+        javax.swing.GroupLayout visualizationPanel1Layout = new javax.swing.GroupLayout(visualizationPanel1);
+        visualizationPanel1.setLayout(visualizationPanel1Layout);
+        visualizationPanel1Layout.setHorizontalGroup(
+            visualizationPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1214, Short.MAX_VALUE)
+        );
+        visualizationPanel1Layout.setVerticalGroup(
+            visualizationPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 626, Short.MAX_VALUE)
+        );
+
+        jScrollPane1.setViewportView(visualizationPanel1);
+
+        pnlOverlay.setOpaque(false);
+
+        jButton1.setFont(MainFrame.FONT_AWSOME);
+        jButton1.setForeground(new java.awt.Color(239, 239, 239));
+        jButton1.setText("\uf1fc");
+        jButton1.setBorder(javax.swing.BorderFactory.createCompoundBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true), javax.swing.BorderFactory.createEmptyBorder(12, 12, 12, 12)));
+        jButton1.setContentAreaFilled(false);
+        jButton1.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout pnlOverlayLayout = new javax.swing.GroupLayout(pnlOverlay);
+        pnlOverlay.setLayout(pnlOverlayLayout);
+        pnlOverlayLayout.setHorizontalGroup(
+            pnlOverlayLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlOverlayLayout.createSequentialGroup()
+                .addContainerGap(993, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addGap(12, 12, 12))
+        );
+        pnlOverlayLayout.setVerticalGroup(
+            pnlOverlayLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlOverlayLayout.createSequentialGroup()
+                .addGap(12, 12, 12)
+                .addComponent(jButton1)
+                .addContainerGap(541, Short.MAX_VALUE))
+        );
+
+        jLayeredPane1.setLayer(jScrollPane1, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        jLayeredPane1.setLayer(pnlOverlay, javax.swing.JLayeredPane.PALETTE_LAYER);
+
+        javax.swing.GroupLayout jLayeredPane1Layout = new javax.swing.GroupLayout(jLayeredPane1);
+        jLayeredPane1.setLayout(jLayeredPane1Layout);
+        jLayeredPane1Layout.setHorizontalGroup(
+            jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(pnlOverlay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jLayeredPane1Layout.setVerticalGroup(
+            jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 579, Short.MAX_VALUE)
+            .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(pnlOverlay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -139,14 +211,14 @@ public class MainFrame extends javax.swing.JFrame
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(sldZoom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1))
+                    .addComponent(jLayeredPane1))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1)
+                .addComponent(jLayeredPane1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -166,6 +238,8 @@ public class MainFrame extends javax.swing.JFrame
     {//GEN-HEADEREND:event_formWindowOpened
         this.evo = new EvolutionApplication(this.visualizationPanel1);
         sldZoomStateChanged(null);
+        sldZoomMouseReleased(null);
+        sldSpeedStateChanged(null);
     }//GEN-LAST:event_formWindowOpened
 
     private void btnDoGenerationsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnDoGenerationsActionPerformed
@@ -207,6 +281,15 @@ public class MainFrame extends javax.swing.JFrame
         this.sldZoom.setValue(this.sldZoom.getValue() + (this.sldZoom.getMaximum() + this.sldZoom.getMinimum())/-15 * evt.getWheelRotation());
         sldZoomMouseReleased(null);
     }//GEN-LAST:event_formMouseWheelMoved
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
+    {//GEN-HEADEREND:event_jButton1ActionPerformed
+        JDialog colorChooserDialog = new JDialog(this);
+        colorChooserDialog.setContentPane(new ColorChooserDialog(this.visualizationPanel1.getColors()));
+        colorChooserDialog.setPreferredSize(colorChooserDialog.getContentPane().getPreferredSize());
+        colorChooserDialog.pack();
+        colorChooserDialog.setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -259,9 +342,12 @@ public class MainFrame extends javax.swing.JFrame
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDoGenerations;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLayeredPane jLayeredPane1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPanel pnlOverlay;
     private javax.swing.JSlider sldSpeed;
     private javax.swing.JSlider sldZoom;
     private javax.swing.JSpinner spnGenerations;

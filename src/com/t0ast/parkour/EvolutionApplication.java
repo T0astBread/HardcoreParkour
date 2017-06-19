@@ -6,6 +6,7 @@
 package com.t0ast.parkour;
 
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.t0ast.evolution.EvolvingPool;
 import com.t0ast.parkour.training.ParkourEnvironment;
 import com.t0ast.evolution.entities.instructional.InstructionGenerator;
@@ -42,19 +43,40 @@ public class EvolutionApplication
         ig.registerInstruction(MoveInstruction.class);
         ig.registerInstruction(TurnInstruction.class);
         this.pool = new EvolvingPool<>(new CumulativeTrainer<>(this.environment, rater),
-        100, 50, new IterativeExponentialListElementSelector(.9, .02), new IterativeExponentialListElementSelector(.9, .2),
+        100, 50, new IterativeExponentialListElementSelector(.8, .02), new IterativeExponentialListElementSelector(.9, .2),
         new InstructionalMutator<>(ig, new EqualRandomListElementSelector()), EvolvingPool.MutationType.SINGLE_PARENT,
         new InstructionalEntityGenerator<>(new ParkourEntity(), ig));
         this.pool.initialize();
         if(visualizationPanel != null)
         {
+            visualizationPanel.setPool(this.pool);
             visualizationPanel.drawEnvironment(this.environment, this.pool.getEntities());
         }
     }
 
     private ParkourEnvironment getTrainingEnv()
     {
-        return new ParkourEnvironment(300, 100, new Rectangle(100, 30, 100, 50), new Rectangle(260, 10, 20, 75), new Rectangle(10, 0, 10, 90));
+//        //Simple
+//        return new ParkourEnvironment(300, 100,
+//        new Vector2(290, 50),
+//        new Rectangle(100, 30, 100, 50),
+//        new Rectangle(260, 10, 20, 75),
+//        new Rectangle(10, 0, 10, 90));
+        
+        //Left turn
+        return new ParkourEnvironment(600, 400,
+        new Vector2(600, 400),
+        new Rectangle(0, 10, 400, 100),
+        new Rectangle(500, 0, 100, 300),
+        new Rectangle(300, 150, 200, 150))
+        .addCheckpoints(new Vector2(250, 180), new Vector2(250, 350));
+        
+//        //Weird wall-obstacle
+//        return new ParkourEnvironment(600, 400, new Vector2(580, 350),
+//        new Rectangle(300, 0, 300, 300),
+//        new Rectangle(0, 100, 100, 300),
+//        new Rectangle(100, 130, 150, 10),
+//        new Rectangle(150, 150, 150, 10));
     }
 
     public void doGenerations(int generations)
